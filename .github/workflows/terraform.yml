@@ -28,8 +28,8 @@ jobs:
         run: |
           terraform init -backend-config="bucket=${{ secrets.AWS_S3_BUCKET }}" -backend-config="region=${{ secrets.AWS_REGION }}" -backend-config="key=terraform.tfstate" -upgrade
 
-#       - name: Terraform Apply
-#         run: terraform apply -auto-approve
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
 
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+#       - name: Terraform Destroy
+#         run: terraform destroy -auto-approve
