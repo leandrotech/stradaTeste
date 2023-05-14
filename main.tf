@@ -6,18 +6,18 @@ module "vpc" {
   source = "./vpc"
 }
 
-module "s3" {
-  source = "./s3"
-  bucket_name = "leandro-teste-strada-s3"
-}
+# module "s3" {
+#   source = "./s3"
+#   bucket_name = "leandro-teste-strada-s3"
+# }
 
-module "rds" {
-  source = "./rds"
-}
+# module "rds" {
+#   source = "./rds"
+# }
 
-module "eks" {
-  source = "./eks"
-}
+# module "eks" {
+#   source = "./eks"
+# }
 
 # module "application" {
 #   source = "./application"
