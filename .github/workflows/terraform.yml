@@ -1,35 +1,86 @@
-name: "terraform-deploy"
+name: Deploy Infrastructure
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  Deploy:
+  deploy:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.4
 
-      - name: Terraform Init
-        id: init
-        run: |
-          terraform init -backend-config="bucket=${{ secrets.AWS_S3_BUCKET }}" -backend-config="region=${{ secrets.AWS_REGION }}" -backend-config="key=terraform.tfstate" -upgrade
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Plan Terraform changes
+        id: plan
+        run: terraform plan -out=tfplan
+
+      - name: Apply Terraform changes
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply tfplan
+
+      - name: Save Terraform state to S3 bucket
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+          source_dir: .terraform/
+          dest_dir: s3://your-bucket-name/terraform-state/
+        env:
+          AWS_S3_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
+# name: "terraform-deploy"
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   Deploy:
+#     runs-on: ubuntu-latest
+#     env:
+#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#       AWS_REGION: ${{ secrets.AWS_REGION }}
+#       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+
+#     steps:
+#       - uses: actions/checkout@v2
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+
+#       - name: Terraform Init
+#         id: init
+#         run: |
+#           terraform init -backend-config="bucket=${{ secrets.AWS_S3_BUCKET }}" -backend-config="region=${{ secrets.AWS_REGION }}" -backend-config="key=terraform.tfstate" -upgrade
+
+#       - name: Terraform Apply
+#         run: terraform apply -auto-approve
 
 #       - name: Terraform Destroy
 #         run: terraform destroy -auto-approve
