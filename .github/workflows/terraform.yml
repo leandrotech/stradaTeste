@@ -42,7 +42,7 @@ jobs:
         with:
           args: --acl public-read --follow-symlinks --delete
           source_dir: .terraform/
-          dest_dir: s3://your-bucket-name/terraform-state/
+          dest_dir: s3://${{ secrets.AWS_S3_BUCKET }}
         env:
           AWS_S3_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
