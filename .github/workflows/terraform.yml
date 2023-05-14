@@ -36,13 +36,12 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply tfplan
 
-      - name: Save Terraform state to S3 bucket
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      - name: Save Terraform state to S3
         uses: jakejarvis/s3-sync-action@master
         with:
-          args: --acl public-read --follow-symlinks --delete
-          source_dir: /
-          dest_dir: s3://${{ secrets.AWS_S3_BUCKET }}
+          args: --acl private --delete
+          src: terraform.tfstate
+          dest: s3://${{ secrets.AWS_S3_BUCKET_NAME }}/terraform.tfstate
         env:
           AWS_S3_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
