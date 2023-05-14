@@ -1,12 +1,12 @@
 name: "terraform-deploy"
 
-on: []
-  # push:
-  #   branches:
-  #     - main
-  # pull_request:
-  #   branches:
-  #     - main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   Deploy:
@@ -33,4 +33,3 @@ jobs:
 
 #       - name: Terraform Destroy
 #         run: terraform destroy -auto-approve
-#
