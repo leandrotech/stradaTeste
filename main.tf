@@ -8,7 +8,7 @@ module "vpc" {
 
 module "s3" {
   source = "./s3"
-  bucket_name = "leandro-teste-strada-state-bucket"
+  bucket_name = "leandro-teste-strada-s3"
 }
 
 module "rds" {
@@ -19,7 +19,7 @@ module "eks" {
   source = "./eks"
 }
 
-module "application" {
-  source = "./application"
-  eks_cluster_name = module.eks.my_eks_cluster_name
-}
+# module "application" {
+#   source = "./application"
+#   eks_cluster_name = module.eks.my_eks_cluster_name
+# }
