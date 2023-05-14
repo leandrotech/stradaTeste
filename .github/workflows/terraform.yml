@@ -23,10 +23,10 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
-#       - name: Terraform Init
-#         id: init
-#         run: |
-#           terraform init -backend-config="bucket=${{ secrets.AWS_S3_BUCKET }}" -backend-config="region=${{ secrets.AWS_REGION }}" -backend-config="key=terraform.tfstate" -upgrade
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -backend-config="bucket=${{ secrets.AWS_S3_BUCKET }}" -backend-config="region=${{ secrets.AWS_REGION }}" -backend-config="key=terraform.tfstate" -upgrade
 
 #       - name: Terraform Apply
 #         run: terraform apply -auto-approve
