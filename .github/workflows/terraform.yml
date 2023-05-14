@@ -23,6 +23,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
+      - name: Install Terraform AWS State Plugin
+        run: terraform init -backend=false -upgrade && terraform plugin install terraform-aws-state
+
       - name: Terraform Init
         id: init
         run: |
